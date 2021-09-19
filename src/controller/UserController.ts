@@ -1,25 +1,27 @@
 import { getRepository } from "typeorm";
 import { NextFunction, Request, Response } from "express";
-import { User } from "../entity/User";
+import { UserEntity } from "../entity/user.entity";
 
 export class UserController {
 
-    private userRepository = getRepository(User);
+    private userRepository = getRepository(UserEntity);
 
     async index(request: Request, response: Response, next: NextFunction) {
-        const users: User[] = await this.userRepository.find();
+        const users: UserEntity[] = await this.userRepository.find();
         response.json(users);
     }
 
     async create(request: Request, response: Response, next: NextFunction) {
-        const { firstName, lastName, age } = request.body;
+        const { username, email, password, role, avatar } = request.body;
 
-        let user: User = new User();
+        let user: UserEntity = new UserEntity();
 
-        user = {
-            ...user,
-            ...{ firstName, lastName, age } // updated fields
-        };
+        user.username = username;
+        user.email = email;
+        user.password = password;
+        user.role = role;
+        user.avatar = avatar;
+        user.hashPassword();
 
         try {
             await this.userRepository.save(user);
@@ -34,43 +36,42 @@ export class UserController {
     async read(request: Request, response: Response, next: NextFunction) {
 
         try {
-            const user: User = await this.userRepository.findOneOrFail(request.params.id);
+            const user: UserEntity = await this.userRepository.findOneOrFail(request.params.id);
             response.json(user);
         } catch (error) {
             response.json({ error });
         }
     }
 
-    async update(req: Request, res: Response, next: NextFunction) {
-
+    async update(request: Request, response: Response, next: NextFunction) {
         try {
 
-            let user: User = await this.userRepository.findOneOrFail(req.params.id);
+            let user: UserEntity = await this.userRepository.findOneOrFail(request.params.id);
 
             try {
-                const { firstName, lastName, age } = req.body;
+                const { username, email, password, role, avatar } = request.body;
 
-                user = {
-                    ...user,
-                    ...{ firstName, lastName, age } // updated fields
-                };
+                user.avatar = avatar;
+                user.role = role;
+                user.username = username;
+                user.updatedAt = new Date();
 
                 await this.userRepository.save(user);
 
-                res.status(200).json({ message: "UserEntity UPDATED successfully!!", user });
+                response.status(200).json({ message: "UserEntity UPDATED successfully!!", user });
             } catch (error) {
-                res.json({ error });
+                response.json({ error });
             }
 
         } catch (error) {
-            res.json({ error });
+            response.json({ error });
         }
     }
 
     async delete(request: Request, response: Response, next: NextFunction) {
 
         try {
-            let user: User = await this.userRepository.findOneOrFail(request.params.id);
+            let user: UserEntity = await this.userRepository.findOneOrFail(request.params.id);
 
             try {
 

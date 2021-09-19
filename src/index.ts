@@ -2,11 +2,12 @@ import "reflect-metadata";
 import express, { Application, Request, Response, NextFunction } from "express";
 import { Connection, createConnection, getConnectionOptions } from "typeorm";
 import { Routes } from "./routes";
-import { User } from "./entity/User";
+import { UserEntity } from "./entity/user.entity";
 import { config } from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import { Server } from "http";
+import { PostEntity } from "./entity/post.entity";
 
 config();
 
@@ -37,12 +38,12 @@ class App {
         let connectionOptions: any = await getConnectionOptions();
 
         // AÑADIR AQUI TODAS LAS CLASES DE TIPO ENTITY DEL DIRECTORIO ./src/entity/*.ts
-        connectionOptions.entities = [User];
+        connectionOptions.entities = [UserEntity, PostEntity];
 
         try {
             const connection: Connection = await createConnection(connectionOptions);
 
-            // this.inserDummyData(connection);
+            this.inserDummyData(connection);
 
         } catch (error) {
             console.log(error);
@@ -87,16 +88,18 @@ class App {
     private async inserDummyData(connection: any) {
 
         // insert new users for test
-        await connection.manager.save(connection.manager.create(User, {
-            firstName: "Timber",
-            lastName: "Saw",
-            age: 27
+        await connection.manager.save(connection.manager.create(UserEntity, {
+            email: "Timber",
+            username: "Saw",
+            password: 123456,
+            avatar: "https://phantom-marca.unidadeditorial.es/0215aae8d4e66ead5eafa06462632d64/crop/48x0/670x350/resize/660/f/webp/assets/multimedia/imagenes/2021/02/23/16140832349541.jpg"
         }));
 
-        await connection.manager.save(connection.manager.create(User, {
-            firstName: "Phantom",
-            lastName: "Assassin",
-            age: 24
+        await connection.manager.save(connection.manager.create(UserEntity, {
+            email: "Phantom",
+            username: "Assassin",
+            password: 654321,
+            avatar: "https://lh3.googleusercontent.com/9FHOk79iiGEisBJxkU9smRi8CUKagEkt_yl7T7z9mEBHypSg5sblsGkv1YOxj-4vCpVbYUeo7dC6q2rxiHn9fNlcBxXGabLd7RpsNC6MHrwCRw=e365-w567"
         }));
     }
 

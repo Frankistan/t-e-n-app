@@ -8,6 +8,8 @@ import cors from "cors";
 import morgan from "morgan";
 import { Server } from "http";
 import { PostEntity } from "./entity/post.entity";
+import validationMiddleware from "./middlewares/validation.middleware";
+import { AuthMiddleware } from "./middlewares/auth.middleware";
 
 config();
 
@@ -43,7 +45,7 @@ class App {
         try {
             const connection: Connection = await createConnection(connectionOptions);
 
-            this.inserDummyData(connection);
+            // this.inserDummyData(connection);
 
         } catch (error) {
             console.log(error);
@@ -64,6 +66,23 @@ class App {
                 optionsSuccessStatus: 200
             })
         );
+
+        this.app.use(
+            AuthMiddleware.unless({
+                path: [
+                    "/",
+                    "/auth/login",
+                    "/auth/signup",
+                    "/upload/multiple",
+                    "/upload/show",
+                    { url: /^\/auth\/verify\/.*/, methods: ['GET'] }, //route with params
+
+                ]
+            })
+        );
+
+        this.app.use("/auth/login", validationMiddleware(UserEntity, true));
+        this.app.use("/auth/signup", validationMiddleware(UserEntity, true));
     }
 
     private routes() {
@@ -88,19 +107,23 @@ class App {
     private async inserDummyData(connection: any) {
 
         // insert new users for test
-        await connection.manager.save(connection.manager.create(UserEntity, {
-            email: "Timber",
-            username: "Saw",
-            password: 123456,
-            avatar: "https://phantom-marca.unidadeditorial.es/0215aae8d4e66ead5eafa06462632d64/crop/48x0/670x350/resize/660/f/webp/assets/multimedia/imagenes/2021/02/23/16140832349541.jpg"
-        }));
+        let user: UserEntity = new UserEntity();
 
-        await connection.manager.save(connection.manager.create(UserEntity, {
-            email: "Phantom",
-            username: "Assassin",
-            password: 654321,
-            avatar: "https://lh3.googleusercontent.com/9FHOk79iiGEisBJxkU9smRi8CUKagEkt_yl7T7z9mEBHypSg5sblsGkv1YOxj-4vCpVbYUeo7dC6q2rxiHn9fNlcBxXGabLd7RpsNC6MHrwCRw=e365-w567"
-        }));
+        user.username = "Fran";
+        user.email = "fran@gmail.com";
+        user.password = "123456";
+        user.avatar = "https://phantom-marca.unidadeditorial.es/0215aae8d4e66ead5eafa06462632d64/crop/48x0/670x350/resize/660/f/webp/assets/multimedia/imagenes/2021/02/23/16140832349541.jpg";
+
+        user.hashPassword();
+
+        await connection.manager.save(connection.manager.create(UserEntity, user));
+
+        // await connection.manager.save(connection.manager.create(UserEntity, {
+        //     email: "Phantom",
+        //     username: "Assassin",
+        //     password: 654321,
+        //     avatar: "https://lh3.googleusercontent.com/9FHOk79iiGEisBJxkU9smRi8CUKagEkt_yl7T7z9mEBHypSg5sblsGkv1YOxj-4vCpVbYUeo7dC6q2rxiHn9fNlcBxXGabLd7RpsNC6MHrwCRw=e365-w567"
+        // }));
     }
 
     run(): Server {

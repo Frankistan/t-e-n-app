@@ -17,7 +17,7 @@ export class UserEntity {
     @IsNotEmpty()
     email: string;
 
-    @Column({ type: "varchar", length: 20 })
+    @Column({ type: "varchar" })
     @IsString()
     @IsNotEmpty()
     @MinLength(6)
@@ -25,6 +25,7 @@ export class UserEntity {
 
     @Column({ type: "varchar", length: 100 })
     @IsString()
+    @IsNotEmpty()
     username: string;
 
     @Column({ type: "varchar", nullable: true })
@@ -32,9 +33,9 @@ export class UserEntity {
     @IsUrl()
     avatar: string;
 
-    @Column({ type: "varchar" })
+    @Column({ type: "varchar", default: "reader" })
     @IsString()
-    role: string = "reader";
+    role: string;
 
 
     @Column({ name: 'created_at', nullable: true })

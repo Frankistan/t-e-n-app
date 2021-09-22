@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { UserEntity } from "../entity/user.entity";
-import jwt from "jsonwebtoken";
-import { promisify } from "util";
-import LogInDto from "../validation/login.dto";
 import { NodemailerProvider } from "../providers/nodemailer";
+import jwt from "jsonwebtoken";
 
 export class AuthController {
 
@@ -70,10 +68,7 @@ export class AuthController {
             try {
                 await this.userRepository.save(user);
 
-                // TODO: ENVIAR EMAIL PARA VERIFICAR LA CUENTA
                 this.sendAccountVerificationEmail(request, response, user);
-
-
 
             } catch (error) {
                 response.json({ message: "userRepository error on saving", error });
@@ -120,7 +115,7 @@ export class AuthController {
         const token = this.createToken({ user }, "20m", process.env.MAIL_VERIFICATION_TOKEN);
 
         try {
-            // ENVIAR EMAIL
+
             await this.nodemailerProvider.sendEmail({
                 to: {
                     name: user.username,

@@ -1,8 +1,15 @@
 import { AuthController } from "./controller/auth.controller";
+import { IndexController } from "./controller/index.controller";
+import { UploadController } from "./controller/upload.controller";
 import { UserController } from "./controller/user.controller";
 
 export const Routes = [
     {
+        method: "get",
+        route: "/",
+        controller: IndexController,
+        action: "home"
+    }, {
         method: "post",
         route: "/auth/login",
         controller: AuthController,
@@ -42,4 +49,15 @@ export const Routes = [
         route: "/users/:id",
         controller: UserController,
         action: "delete"
-    }];
+    }, {
+        method: "post",
+        route: "/upload/single",
+        controller: UploadController,
+        action: "single"
+    }, {
+        method: "get",
+        route: "/upload/single",
+        controller: UploadController,
+        action: "show"
+    }
+];

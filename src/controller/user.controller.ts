@@ -26,7 +26,7 @@ export class UserController {
         try {
             await this.userRepository.save(user);
 
-            response.json(user);
+            response.json({ message: "User CREATED successfully!!", user });
 
         } catch (error) {
             response.json({ error });
@@ -58,7 +58,7 @@ export class UserController {
 
                 await this.userRepository.save(user);
 
-                response.status(200).json({ message: "UserEntity UPDATED successfully!!", user });
+                response.status(200).json({ message: "User UPDATED successfully!!", user });
             } catch (error) {
                 response.json({ error });
             }
@@ -76,7 +76,7 @@ export class UserController {
             try {
 
                 await this.userRepository.remove(user);
-                response.status(200).json({ message: "UserEntity DELETED successfully!!" });
+                response.status(200).json({ message: "User DELETED successfully!!" });
 
             } catch (error) {
                 response.json({ error });

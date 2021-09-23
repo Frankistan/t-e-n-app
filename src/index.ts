@@ -13,6 +13,7 @@ import { AuthMiddleware } from "./middlewares/auth.middleware";
 import MulterMiddleware from "./middlewares/multer.middleware";
 import * as path from "path";
 import { UserDto } from "./validation/user.dto";
+import { cleanFolder } from "./utils/helpers";
 
 config();
 
@@ -58,6 +59,7 @@ class App {
     private preMiddlawares() {
 
         if (this.NODE_ENV === 'development') {
+            cleanFolder();
             this.app.use(express.static(path.join(process.cwd(), 'public')));
             this.app.use(morgan('dev'));  // log every request to the console
         } else {

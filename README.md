@@ -3,6 +3,7 @@
 Steps to run this project:
 
 1. Run `npm i` command
+
 # DEVELOPMENT MODE
 2. Run `npm run dev` command
 
@@ -16,4 +17,3 @@ Steps to run this project:
 3. Send emails
 4. API with CRUD operations
 5. Data validation
-6. Error Handling

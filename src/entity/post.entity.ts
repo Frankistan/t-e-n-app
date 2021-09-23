@@ -14,7 +14,7 @@ export class PostEntity {
     content: string;
 
     @Column({ nullable: true })
-    featured_img: string
+    featured_img: string;
 
     @Column({ name: 'created_at', nullable: true })
     @CreateDateColumn()

@@ -12,6 +12,7 @@ import validationMiddleware from "./middlewares/validation.middleware";
 import { AuthMiddleware } from "./middlewares/auth.middleware";
 import MulterMiddleware from "./middlewares/multer.middleware";
 import * as path from "path";
+import { UserDto } from "./validation/user.dto";
 
 config();
 
@@ -19,7 +20,7 @@ class App {
 
     private app: Application;
 
-    constructor(private port?: number | string) {
+    constructor(private NODE_ENV: string = 'development', private port?: number | string) {
 
         this.app = express();
 
@@ -55,12 +56,17 @@ class App {
     }
 
     private preMiddlawares() {
+
+        if (this.NODE_ENV === 'development') {
+            this.app.use(express.static(path.join(process.cwd(), 'public')));
+            this.app.use(morgan('dev'));  // log every request to the console
+        } else {
+
+            this.app.use(express.static(path.join(process.cwd(), 'dist'), { maxAge: '7d' }));
+        }
+
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(express.json());
-        this.app.use(morgan("dev"));
-
-        // SET static files location
-        this.app.use('/', express.static(path.join(process.cwd(), 'src')));
 
         // IMPORTANTE PARA LEER LAS IMAGENES SUBIDAS
         this.app.use(express.static(process.env.APP_UPLOADS_PATH));
@@ -87,8 +93,8 @@ class App {
             })
         );
 
-        this.app.use("/auth/login", validationMiddleware(UserEntity, true));
-        this.app.use("/auth/signup", validationMiddleware(UserEntity, true));
+        this.app.use("/auth/login", validationMiddleware(UserDto, true));
+        this.app.use("/auth/signup", validationMiddleware(UserDto, true));
         this.app.use("/upload/single", MulterMiddleware.single("avatar"));
     }
 

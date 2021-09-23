@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, CreateDateColumn } from "typeorm";
 import { PostEntity } from "./post.entity";
 import bcrypt from "bcrypt";
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsUrl, IsBoolean } from "class-validator";
 
 // fuente:
 // https://www.npmjs.com/package/class-validator
@@ -13,30 +12,19 @@ export class UserEntity {
     id: number;
 
     @Column({ unique: true })
-    @IsEmail()
-    @IsNotEmpty()
     email: string;
 
     @Column({ type: "varchar" })
-    @IsString()
-    @IsNotEmpty()
-    @MinLength(6)
     password: string;
 
     @Column({ type: "varchar", length: 100 })
-    @IsString()
-    @IsNotEmpty()
     username: string;
 
     @Column({ type: "varchar", nullable: true })
-    @IsString()
-    @IsUrl()
     avatar: string;
 
     @Column({ type: "varchar", default: "reader" })
-    @IsString()
     role: string;
-
 
     @Column({ name: 'created_at', nullable: true })
     @CreateDateColumn()
@@ -47,7 +35,6 @@ export class UserEntity {
     updatedAt: Date;
 
     @Column({ name: 'email_verified', default: 0 })
-    @IsBoolean()
     emailVerified: boolean;
 
     // RELATIONS
@@ -56,7 +43,6 @@ export class UserEntity {
 
     @OneToMany(() => PostEntity, post => post.author)
     posts: PostEntity[];
-
 
     // METHODS
     hashPassword(): void {
@@ -67,7 +53,4 @@ export class UserEntity {
     checkPassword(password: string): boolean {
         return bcrypt.compareSync(password, this.password);
     }
-
-
-
 }
